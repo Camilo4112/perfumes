@@ -1,0 +1,38 @@
+<html lang="es">
+  <title>Tienda de Perfumes</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="hero">
+  <div class="header-container">
+    <img src="logo1.png" alt="Logo" class="logo">
+    <div>
+      <h1>Perfumes Premium</h1>
+      <p>Encuentra tu fragancia ideal</p>
+    </div>
+  </div>
+</header>
+
+<section class="filters">
+  <input type="text" id="search" placeholder="Buscar perfume...">
+
+  <select id="category">
+    <option value="">Todas</option>
+    <option value="Hombre">Hombre</option>
+    <option value="Mujer">Mujer</option>
+    <option value="Unisex">Unisex</option>
+  </select>
+
+  <select id="brand">
+    <option value="">Todas las marcas</option>
+  </select>
+</section>
+
+<section id="products" class="grid"></section>
+<div id="pagination" class="pagination"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
