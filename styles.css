@@ -22,22 +22,64 @@ body {
 .header-container {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 15px;
 }
 
+.left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.right {
+  display: flex;
+  gap: 10px;
+}
+
 .logo {
-  width: 60px;
-  height: 60px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
 }
 
 .hero h1 {
-  font-size: 24px;
+  font-size: 32px;
 }
 
 .hero p {
-  font-size: 14px;
+  font-size: 16px;
   color: #ccc;
+}
+
+/* BOTONES REDES EN HEADER */
+.social-card {
+  padding: 20px 25px;
+  border-radius: 10px;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  transition: 0.3s;
+  text-align: center;
+}
+
+/* Instagram */
+.instagram {
+  background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af);
+}
+
+.instagram:hover {
+  transform: scale(1.05);
+}
+
+/* TikTok */
+.tiktok {
+  background: #000;
+}
+
+.tiktok:hover {
+  transform: scale(1.05);
 }
 
 /* FILTROS */
@@ -53,11 +95,11 @@ body {
 
 .filters input,
 .filters select {
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-radius: 10px;
   border: 1px solid #ddd;
-  font-size: 14px;
-  min-width: 150px;
+  font-size: 17px;
+  min-width: 180px;
 }
 
 .filters input:focus,
@@ -214,12 +256,28 @@ body {
 @media (max-width: 768px) {
   .header-container {
     flex-direction: column;
+  }
+
+  .left {
+    flex-direction: column;
     text-align: center;
   }
 
+  .right {
+    margin-top: 10px;
+  }
+
   .logo {
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
+  }
+
+  .hero h1 {
+    font-size: 24px;
+  }
+
+  .hero p {
+    font-size: 14px;
   }
 
   .filters {
@@ -230,5 +288,6 @@ body {
   .filters input,
   .filters select {
     width: 90%;
+    font-size: 15px;
   }
 }
