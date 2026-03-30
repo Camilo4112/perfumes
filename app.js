@@ -1,3 +1,15 @@
+const firebaseConfig = {
+  apiKey: "AIzaSyC9vSfCznURrSOObdyDsuOxd_vENdM-oqQ",
+  authDomain: "perfumes-app-8aaeb.firebaseapp.com",
+  projectId: "perfumes-app-8aaeb",
+  storageBucket: "perfumes-app-8aaeb.firebasestorage.app",
+  messagingSenderId: "744434930442",
+  appId: "1:744434930442:web:63aad61a86788bc8b360f3"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 const phone = "573013614704";
 const itemsPerPage = 12;
 
@@ -7,20 +19,27 @@ let currentPage = 1;
 const container = document.getElementById("products");
 const pagination = document.getElementById("pagination");
 
-/* ================= FETCH ================= */
-fetch("perfumes.json")
-  .then(res => res.json())
-  .then(data => {
-    perfumes = data;
-    loadBrands();
-    render();
-  })
-  .catch(err => console.error("Error:", err));
+// 🔥 CARGAR DESDE FIREBASE
+async function loadData() {
+  const snapshot = await db.collection("perfumes").get();
 
-/* ================= FILTROS ================= */
+  perfumes = snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+
+  loadBrands();
+  render();
+}
+
+loadData();
+
+/* FILTROS */
 function loadBrands() {
   const brands = [...new Set(perfumes.map(p => p.brand))];
   const select = document.getElementById("brand");
+
+  select.innerHTML = '<option value="">Todas las marcas</option>';
 
   brands.forEach(b => {
     const option = document.createElement("option");
@@ -34,43 +53,62 @@ function getFiltered() {
   const text = document.getElementById("search").value.toLowerCase();
   const category = document.getElementById("category").value;
   const brand = document.getElementById("brand").value;
+  const sort = document.getElementById("sort").value;
 
-  return perfumes.filter(p =>
+  let filtered = perfumes.filter(p =>
     p.name.toLowerCase().includes(text) &&
     (category === "" || p.category === category) &&
     (brand === "" || p.brand === brand)
   );
+
+  if (sort === "az") {
+    filtered.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  return filtered;
 }
 
-/* ================= RENDER ================= */
+/* RENDER */
 function render() {
   const filtered = getFiltered();
+
+  if (filtered.length === 0) {
+    container.innerHTML = "<p>No se encontraron perfumes</p>";
+    pagination.innerHTML = "";
+    return;
+  }
+
   const start = (currentPage - 1) * itemsPerPage;
   const paginated = filtered.slice(start, start + itemsPerPage);
 
   container.innerHTML = "";
 
   paginated.forEach(p => {
-    const msg = encodeURIComponent(`Hola, quiero comprar ${p.name}`);
+    const msg = encodeURIComponent(
+      `Hola, estoy interesado en el perfume ${p.name}. ¿Me puedes dar más información?`
+    );
+
     const link = `https://wa.me/${phone}?text=${msg}`;
-    const imageUrl = p.image || "https://via.placeholder.com/300";
 
     const card = document.createElement("div");
     card.className = "card";
 
     card.innerHTML = `
       <div class="img-container">
-        <img src="${imageUrl}">
+        <img src="${p.image}" onerror="this.src='https://via.placeholder.com/300'">
       </div>
 
       <div class="info">
         <div class="name">${p.name}</div>
         <div class="brand">${p.brand}</div>
         <div class="category">${p.category}</div>
+        ${p.price ? `<div class="price">$${p.price}</div>` : ""}
       </div>
 
       <div class="actions">
-        <a class="btn" href="${link}" target="_blank">Comprar</a>
+        <a class="btn" href="${link}" target="_blank">
+          Comprar por WhatsApp
+        </a>
       </div>
     `;
 
@@ -80,8 +118,7 @@ function render() {
   renderPagination(filtered.length);
 }
 
-/* ================= PAGINACIÓN ================= */
-
+/* PAGINACIÓN */
 function renderPagination(total) {
   pagination.innerHTML = "";
   const pages = Math.ceil(total / itemsPerPage);
@@ -101,19 +138,10 @@ function renderPagination(total) {
   }
 }
 
-/* ================= EVENTOS ================= */
-
-document.getElementById("search").addEventListener("input", () => {
-  currentPage = 1;
-  render();
-});
-
-document.getElementById("category").addEventListener("change", () => {
-  currentPage = 1;
-  render();
-});
-
-document.getElementById("brand").addEventListener("change", () => {
-  currentPage = 1;
-  render();
+/* EVENTOS */
+["search", "category", "brand", "sort"].forEach(id => {
+  document.getElementById(id).addEventListener("input", () => {
+    currentPage = 1;
+    render();
+  });
 });
